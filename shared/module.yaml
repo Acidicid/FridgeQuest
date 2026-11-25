@@ -21,14 +21,34 @@ dependencies:
   - $libs.koin.core
   - $libs.koin.compose
   - $libs.koin.compose.viewmodel
+  # Lab 6: Ktor + KSafe
+  - $libs.ktor.client.core
+  - $libs.ktor.client.content.negotiation
+  - $libs.ktor.client.logging
+  - $libs.ktor.client.auth
+  - $libs.ktor.serialization.kotlinx.json
+  - $libs.ksafe
+  - $kotlin.serialization.json
 
 dependencies@android:
   - $compose.uiTooling
   # Lab 5: Navigation 3 (Android)
   - $libs.androidx.navigation3.runtime
   - $libs.androidx.navigation3.ui
+  # Lab 6
+  - $libs.ktor.client.android
+  - $libs.koin.android
+
+dependencies@jvm:
+  - $libs.ktor.client.cio
+
+dependencies@wasmJs:
+  - $libs.ktor.client.js
 
 settings:
+  kotlin:
+    # плагін kotlinx.serialization для @Serializable моделей запитів/відповідей
+    serialization: enabled
   compose:
     enabled: true
     resources:

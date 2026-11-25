@@ -1,5 +1,6 @@
 package org.example.project.ui.auth
 
+import org.example.project.domain.model.AppError
 import org.example.project.domain.model.PasswordError
 import org.example.project.domain.model.UsernameError
 
@@ -10,7 +11,6 @@ data class AuthState(
     val passwordError: PasswordError? = null,
     val isPasswordVisible: Boolean = false,
     val isLoading: Boolean = false,
-    val signInFailed: Boolean = false,
     /** Після першої спроби входу помилки перевіряються "наживо" під час введення. */
     val showErrors: Boolean = false,
 )
@@ -24,7 +24,9 @@ sealed interface AuthIntent {
 }
 
 sealed interface AuthEffect {
-    data class NavigateToHome(val username: String) : AuthEffect
+    data object NavigateToHome : AuthEffect
     data object FocusUsername : AuthEffect
     data object FocusPassword : AuthEffect
+    /** Разова подія -> спливний снекбар з текстом помилки. */
+    data class ShowError(val error: AppError) : AuthEffect
 }

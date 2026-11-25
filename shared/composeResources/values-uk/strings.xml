@@ -21,15 +21,23 @@
     <string name="auth_show">Показати</string>
     <string name="auth_hide">Сховати</string>
     <string name="auth_sign_in">Увійти</string>
-    <string name="auth_hint">Демо-режим: підійде будь-яке коректне імʼя та пароль</string>
-    <string name="auth_error_generic">Не вдалося увійти. Спробуй ще раз.</string>
+    <string name="auth_hint">Тестовий акаунт: emilys / emilyspass</string>
     <string name="err_username_empty">Введи імʼя користувача</string>
     <string name="err_username_short">Щонайменше 3 символи</string>
     <string name="err_username_long">Не більше 20 символів</string>
     <string name="err_username_chars">Лише латинські літери, цифри, _ та .</string>
     <string name="err_password_empty">Введи пароль</string>
-    <string name="err_password_short">Щонайменше 8 символів</string>
-    <string name="err_password_digit">Додай хоча б одну цифру</string>
-    <string name="err_password_letter">Додай хоча б одну літеру</string>
+    <string name="err_password_short">Щонайменше 6 символів</string>
     <string name="home_greeting">Привіт, %1$s!</string>
+    <!-- Lab 6: networking -->
+    <string name="home_greeting_anonymous">Привіт!</string>
+    <string name="home_account">@%1$s · %2$s</string>
+    <string name="home_refresh">Оновити профіль</string>
+    <string name="home_logout">Вийти</string>
+    <string name="error_invalid_credentials">Неправильне імʼя або пароль</string>
+    <string name="error_session_expired">Сесія завершилась. Увійди ще раз</string>
+    <string name="error_no_internet">Немає звʼязку з сервером. Перевір інтернет</string>
+    <string name="error_timeout">Сервер довго не відповідає. Спробуй ще раз</string>
+    <string name="error_server">Помилка сервера. Спробуй пізніше</string>
+    <string name="error_unknown">Щось пішло не так. Спробуй ще раз</string>
 </resources>

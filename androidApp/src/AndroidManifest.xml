@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Lab 6: без цього дозволу на Android жоден запит не піде -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
+            android:name=".FridgeQuestApp"
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"

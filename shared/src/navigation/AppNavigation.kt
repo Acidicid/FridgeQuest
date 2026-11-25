@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
@@ -17,6 +18,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import org.example.project.ui.auth.AuthScreen
 import org.example.project.ui.home.HomeScreen
+import org.example.project.ui.main.MainEffect
 import org.example.project.ui.main.MainViewModel
 import org.example.project.ui.onboarding.OnboardingScreen
 import org.koin.compose.viewmodel.koinViewModel
@@ -36,23 +38,33 @@ fun AppNavigation(mainViewModel: MainViewModel = koinViewModel()) {
 
     val backStack = remember(startRoute) { mutableStateListOf<Route>(startRoute) }
 
+    // Сесія протухла (не вдалося оновити токен) -> на логін, звідки б ми не були
+    LaunchedEffect(mainViewModel) {
+        mainViewModel.effects.collect { effect ->
+            when (effect) {
+                MainEffect.SessionExpired ->
+                    if (backStack.lastOrNull() != Route.Auth) backStack.resetTo(Route.Auth)
+            }
+        }
+    }
+
     NavDisplay(
         backStack = backStack,
         onBack = { if (backStack.size > 1) backStack.removeLastOrNull() },
         entryDecorators = listOf(
-            rememberSaveableStateHolderNavEntryDecorator(),
+            rememberSaveableStateHolderNavEntryDecorator<Route>(),
             // кожен екран отримує власний ViewModelStore -> свою ViewModel
-            rememberViewModelStoreNavEntryDecorator(),
+            rememberViewModelStoreNavEntryDecorator<Route>(),
         ),
         entryProvider = entryProvider<Route> {
             entry<Route.Onboarding> {
                 OnboardingScreen(onFinished = { backStack.resetTo(Route.Auth) })
             }
             entry<Route.Auth> {
-                AuthScreen(onSignedIn = { username -> backStack.resetTo(Route.Home(username)) })
+                AuthScreen(onLoggedIn = { backStack.resetTo(Route.Home) })
             }
-            entry<Route.Home> { route ->
-                HomeScreen(username = route.username)
+            entry<Route.Home> {
+                HomeScreen(onLoggedOut = { backStack.resetTo(Route.Auth) })
             }
         },
     )
@@ -61,5 +73,5 @@ fun AppNavigation(mainViewModel: MainViewModel = koinViewModel()) {
 /** Замінити весь стек одним екраном, щоб "Назад" не повертав на онбординг/логін. */
 private fun SnapshotStateList<Route>.resetTo(route: Route) {
     add(route)
-    removeRange(0, lastIndex)
+    subList(0, lastIndex).clear()
 }

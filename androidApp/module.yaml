@@ -5,6 +5,9 @@ dependencies:
   - $libs.androidx.activity.compose
   - $compose.preview
   - $compose.uiTooling
+  # Lab 6: старт Koin з Application
+  - $libs.koin.core
+  - $libs.koin.android
 
 settings:
   compose: enabled

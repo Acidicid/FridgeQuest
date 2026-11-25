@@ -6,5 +6,5 @@ import androidx.navigation3.runtime.NavKey
 sealed interface Route : NavKey {
     data object Onboarding : Route
     data object Auth : Route
-    data class Home(val username: String) : Route
+    data object Home : Route
 }

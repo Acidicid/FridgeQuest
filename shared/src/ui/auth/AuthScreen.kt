@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
@@ -23,6 +25,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -30,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,11 +50,11 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
 import org.example.project.domain.model.PasswordError
 import org.example.project.domain.model.UsernameError
 import org.example.project.resources.Res
 import org.example.project.resources.app_name
-import org.example.project.resources.auth_error_generic
 import org.example.project.resources.auth_hide
 import org.example.project.resources.auth_hint
 import org.example.project.resources.auth_password
@@ -57,43 +63,60 @@ import org.example.project.resources.auth_sign_in
 import org.example.project.resources.auth_subtitle
 import org.example.project.resources.auth_title
 import org.example.project.resources.auth_username
-import org.example.project.resources.err_password_digit
 import org.example.project.resources.err_password_empty
-import org.example.project.resources.err_password_letter
 import org.example.project.resources.err_password_short
 import org.example.project.resources.err_username_chars
 import org.example.project.resources.err_username_empty
 import org.example.project.resources.err_username_long
 import org.example.project.resources.err_username_short
+import org.example.project.ui.common.messageRes
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun AuthScreen(
-    onSignedIn: (username: String) -> Unit,
+    onLoggedIn: () -> Unit,
     viewModel: AuthViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val usernameFocus = remember { FocusRequester() }
     val passwordFocus = remember { FocusRequester() }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
+    // Події (Effect) від ViewModel: навігація, фокус, снекбар з помилкою
     LaunchedEffect(viewModel) {
         viewModel.effects.collect { effect ->
             when (effect) {
-                is AuthEffect.NavigateToHome -> onSignedIn(effect.username)
+                AuthEffect.NavigateToHome -> onLoggedIn()
                 AuthEffect.FocusUsername -> usernameFocus.requestFocus()
                 AuthEffect.FocusPassword -> passwordFocus.requestFocus()
+                is AuthEffect.ShowError -> scope.launch {
+                    // окремий launch, щоб снекбар не блокував обробку наступних подій
+                    snackbarHostState.currentSnackbarData?.dismiss()
+                    snackbarHostState.showSnackbar(getString(effect.error.messageRes()))
+                }
             }
         }
     }
 
-    AuthContent(
-        state = state,
-        onIntent = viewModel::onIntent,
-        usernameFocus = usernameFocus,
-        passwordFocus = passwordFocus,
-    )
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        contentWindowInsets = WindowInsets(0),
+        snackbarHost = {
+            SnackbarHost(snackbarHostState, Modifier.navigationBarsPadding().imePadding())
+        },
+    ) { padding ->
+        AuthContent(
+            state = state,
+            onIntent = viewModel::onIntent,
+            usernameFocus = usernameFocus,
+            passwordFocus = passwordFocus,
+            modifier = Modifier.padding(padding),
+        )
+    }
 }
 
 @Composable
@@ -102,11 +125,12 @@ private fun AuthContent(
     onIntent: (AuthIntent) -> Unit,
     usernameFocus: FocusRequester,
     passwordFocus: FocusRequester,
+    modifier: Modifier = Modifier,
 ) {
     val keyboard = LocalSoftwareKeyboardController.current
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .safeContentPadding()
@@ -139,7 +163,7 @@ private fun AuthContent(
                         singleLine = true,
                         enabled = !state.isLoading,
                         isError = state.usernameError != null,
-                        supportingText = state.usernameError?.let { { Text(stringResource(it.message())) } },
+                        supportingText = state.usernameError?.let { errorText(it.message()) },
                         keyboardOptions = KeyboardOptions(
                             capitalization = KeyboardCapitalization.None,
                             autoCorrectEnabled = false,
@@ -160,7 +184,7 @@ private fun AuthContent(
                         singleLine = true,
                         enabled = !state.isLoading,
                         isError = state.passwordError != null,
-                        supportingText = state.passwordError?.let { { Text(stringResource(it.message())) } },
+                        supportingText = state.passwordError?.let { errorText(it.message()) },
                         visualTransformation = if (state.isPasswordVisible) {
                             VisualTransformation.None
                         } else {
@@ -188,14 +212,6 @@ private fun AuthContent(
                         ),
                         modifier = Modifier.fillMaxWidth().focusRequester(passwordFocus),
                     )
-
-                    if (state.signInFailed) {
-                        Text(
-                            text = stringResource(Res.string.auth_error_generic),
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
 
                     Spacer(Modifier.height(4.dp))
 
@@ -277,6 +293,9 @@ private fun AuthHeader() {
     )
 }
 
+/** Текст помилки під полем (supportingText чекає саме @Composable-лямбду). */
+private fun errorText(res: StringResource): @Composable () -> Unit = { Text(stringResource(res)) }
+
 private fun UsernameError.message(): StringResource = when (this) {
     UsernameError.Empty -> Res.string.err_username_empty
     UsernameError.TooShort -> Res.string.err_username_short
@@ -287,6 +306,4 @@ private fun UsernameError.message(): StringResource = when (this) {
 private fun PasswordError.message(): StringResource = when (this) {
     PasswordError.Empty -> Res.string.err_password_empty
     PasswordError.TooShort -> Res.string.err_password_short
-    PasswordError.NoDigit -> Res.string.err_password_digit
-    PasswordError.NoLetter -> Res.string.err_password_letter
 }

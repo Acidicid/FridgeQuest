@@ -21,15 +21,23 @@
     <string name="auth_show">Show</string>
     <string name="auth_hide">Hide</string>
     <string name="auth_sign_in">Sign in</string>
-    <string name="auth_hint">Demo mode: any valid username and password will work</string>
-    <string name="auth_error_generic">Could not sign in. Please try again.</string>
+    <string name="auth_hint">Test account: emilys / emilyspass</string>
     <string name="err_username_empty">Enter your username</string>
     <string name="err_username_short">At least 3 characters</string>
     <string name="err_username_long">No more than 20 characters</string>
     <string name="err_username_chars">Only latin letters, digits, _ and .</string>
     <string name="err_password_empty">Enter your password</string>
-    <string name="err_password_short">At least 8 characters</string>
-    <string name="err_password_digit">Add at least one digit</string>
-    <string name="err_password_letter">Add at least one letter</string>
+    <string name="err_password_short">At least 6 characters</string>
     <string name="home_greeting">Hi, %1$s!</string>
+    <!-- Lab 6: networking -->
+    <string name="home_greeting_anonymous">Hi!</string>
+    <string name="home_account">@%1$s · %2$s</string>
+    <string name="home_refresh">Refresh profile</string>
+    <string name="home_logout">Sign out</string>
+    <string name="error_invalid_credentials">Wrong username or password</string>
+    <string name="error_session_expired">Session expired. Please sign in again</string>
+    <string name="error_no_internet">No connection to the server. Check your internet</string>
+    <string name="error_timeout">The server is taking too long. Try again</string>
+    <string name="error_server">Server error. Try again later</string>
+    <string name="error_unknown">Something went wrong. Try again</string>
 </resources>

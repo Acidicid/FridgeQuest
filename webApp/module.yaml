@@ -3,6 +3,9 @@ product: wasm-js/app
 dependencies:
   - //shared
   - $compose.ui
+  # Lab 6: дістати KSafe з Koin і дочекатися готовності сховища
+  - $libs.koin.core
+  - $libs.ksafe
 
 settings:
   compose: enabled
