@@ -12,6 +12,8 @@ dependencies:
   - $compose.hotReload.runtimeApi
   - $libs.androidx.lifecycle.viewmodel.compose
   - $libs.androidx.lifecycle.runtime.compose
+  - $libs.kermit
+  - $libs.multiplatform.settings.no.arg
 
 dependencies@android:
   - $compose.uiTooling

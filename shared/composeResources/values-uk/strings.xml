@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Квест холодильника</string>
+    <string name="onb_title_1">Відкрий холодильник</string>
+    <string name="onb_desc_1">Півцибулини, два яйця і самотній шматок сиру? Це не безлад, це квест.</string>
+    <string name="onb_title_2">Обери продукти</string>
+    <string name="onb_desc_2">Скажи додатку, що в тебе є, і він знайде рецепти, які підходять.</string>
+    <string name="onb_title_3">Готуй за 15 хвилин</string>
+    <string name="onb_desc_3">Швидкі, дешеві й прості рецепти для студентів із зрозумілими кроками.</string>
+    <string name="onb_title_4">Збирай трофеї</string>
+    <string name="onb_desc_4">Зберігай улюблені рецепти й складай власну кулінарну книгу, квест за квестом.</string>
+    <string name="onb_skip">Пропустити</string>
+    <string name="onb_next">Далі</string>
+    <string name="onb_start">Почати квест</string>
+    <string name="home_placeholder">Холодильник відкрито. Рецепти вже скоро!</string>
+</resources>
