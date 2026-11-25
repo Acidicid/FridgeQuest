@@ -1,0 +1,5 @@
+# Скрипти-обгортки Kotlin Toolchain не рахуємо в статистиці мов GitHub
+kotlin linguist-vendored
+kotlin.bat linguist-vendored
+# HTML-макети з Stitch - це документація, а не код застосунку
+docs/** linguist-documentation

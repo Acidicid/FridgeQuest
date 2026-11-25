@@ -14,9 +14,19 @@ dependencies:
   - $libs.androidx.lifecycle.runtime.compose
   - $libs.kermit
   - $libs.multiplatform.settings.no.arg
+  # Lab 5: Navigation 3 (KMP)
+  - $libs.jetbrains.navigation3.ui
+  - $libs.jetbrains.lifecycle.viewmodel.navigation3
+  # Lab 5: Koin
+  - $libs.koin.core
+  - $libs.koin.compose
+  - $libs.koin.compose.viewmodel
 
 dependencies@android:
   - $compose.uiTooling
+  # Lab 5: Navigation 3 (Android)
+  - $libs.androidx.navigation3.runtime
+  - $libs.androidx.navigation3.ui
 
 settings:
   compose:

@@ -23,15 +23,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import co.touchlab.kermit.Logger
-import kotlinx.coroutines.launch
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.example.project.resources.Res
 import org.example.project.resources.onb_desc_1
 import org.example.project.resources.onb_desc_2
@@ -46,6 +46,7 @@ import org.example.project.resources.onb_title_3
 import org.example.project.resources.onb_title_4
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 private data class OnboardingPage(
     val title: StringResource,
@@ -59,11 +60,43 @@ private val pages = listOf(
     OnboardingPage(Res.string.onb_title_4, Res.string.onb_desc_4),
 )
 
+/** "Розумна" обгортка: бере ViewModel з Koin, слухає ефекти. */
 @Composable
-fun OnboardingScreen(onFinish: () -> Unit) {
-    val pagerState = rememberPagerState(pageCount = { pages.size })
-    val scope = rememberCoroutineScope()
-    val isLast = pagerState.currentPage == pages.lastIndex
+fun OnboardingScreen(
+    onFinished: () -> Unit,
+    viewModel: OnboardingViewModel = koinViewModel(),
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(viewModel) {
+        viewModel.effects.collect { effect ->
+            when (effect) {
+                OnboardingEffect.NavigateToAuth -> onFinished()
+            }
+        }
+    }
+
+    OnboardingContent(state = state, onIntent = viewModel::onIntent)
+}
+
+/** "Тупий" UI: малює state і віддає назовні intent-и. */
+@Composable
+private fun OnboardingContent(
+    state: OnboardingState,
+    onIntent: (OnboardingIntent) -> Unit,
+) {
+    val pagerState = rememberPagerState(initialPage = state.currentPage, pageCount = { pages.size })
+
+    // State -> пейджер: ViewModel сказала "сторінка N" - гортаємо туди
+    LaunchedEffect(state.currentPage) {
+        if (pagerState.currentPage != state.currentPage) {
+            pagerState.animateScrollToPage(state.currentPage)
+        }
+    }
+    // Пейджер -> Intent: користувач свайпнув - повідомляємо ViewModel
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.settledPage }.collect { onIntent(OnboardingIntent.PageChanged(it)) }
+    }
 
     Column(
         modifier = Modifier
@@ -74,11 +107,10 @@ fun OnboardingScreen(onFinish: () -> Unit) {
     ) {
         // Кнопка "Пропустити" вгорі справа
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-            if (!isLast) {
-                TextButton(onClick = {
-                    Logger.i("Onboarding") { "Skipped on page ${pagerState.currentPage + 1}" }
-                    onFinish()
-                }) { Text(stringResource(Res.string.onb_skip)) }
+            if (!state.isLastPage) {
+                TextButton(onClick = { onIntent(OnboardingIntent.SkipClicked) }) {
+                    Text(stringResource(Res.string.onb_skip))
+                }
             } else {
                 Spacer(Modifier.height(48.dp))
             }
@@ -91,21 +123,15 @@ fun OnboardingScreen(onFinish: () -> Unit) {
             PageContent(number = index + 1, page = pages[index])
         }
 
-        PageDots(count = pages.size, current = pagerState.currentPage)
+        PageDots(count = pages.size, current = state.currentPage)
         Spacer(Modifier.height(24.dp))
 
         Button(
-            onClick = {
-                if (isLast) {
-                    Logger.i("Onboarding") { "Finished" }
-                    onFinish()
-                } else {
-                    scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
-                }
-            },
+            onClick = { onIntent(OnboardingIntent.NextClicked) },
+            enabled = !state.isFinishing,
             modifier = Modifier.fillMaxWidth().height(56.dp),
         ) {
-            Text(stringResource(if (isLast) Res.string.onb_start else Res.string.onb_next))
+            Text(stringResource(if (state.isLastPage) Res.string.onb_start else Res.string.onb_next))
         }
     }
 }

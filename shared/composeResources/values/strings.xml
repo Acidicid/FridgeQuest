@@ -13,4 +13,23 @@
     <string name="onb_next">Next</string>
     <string name="onb_start">Start the quest</string>
     <string name="home_placeholder">Fridge is open. Recipes are coming soon!</string>
+    <!-- Lab 5: auth -->
+    <string name="auth_title">Welcome back</string>
+    <string name="auth_subtitle">Sign in to continue your fridge quest</string>
+    <string name="auth_username">Username</string>
+    <string name="auth_password">Password</string>
+    <string name="auth_show">Show</string>
+    <string name="auth_hide">Hide</string>
+    <string name="auth_sign_in">Sign in</string>
+    <string name="auth_hint">Demo mode: any valid username and password will work</string>
+    <string name="auth_error_generic">Could not sign in. Please try again.</string>
+    <string name="err_username_empty">Enter your username</string>
+    <string name="err_username_short">At least 3 characters</string>
+    <string name="err_username_long">No more than 20 characters</string>
+    <string name="err_username_chars">Only latin letters, digits, _ and .</string>
+    <string name="err_password_empty">Enter your password</string>
+    <string name="err_password_short">At least 8 characters</string>
+    <string name="err_password_digit">Add at least one digit</string>
+    <string name="err_password_letter">Add at least one letter</string>
+    <string name="home_greeting">Hi, %1$s!</string>
 </resources>

@@ -13,4 +13,23 @@
     <string name="onb_next">Далі</string>
     <string name="onb_start">Почати квест</string>
     <string name="home_placeholder">Холодильник відкрито. Рецепти вже скоро!</string>
+    <!-- Lab 5: auth -->
+    <string name="auth_title">З поверненням</string>
+    <string name="auth_subtitle">Увійди, щоб продовжити квест холодильника</string>
+    <string name="auth_username">Імʼя користувача</string>
+    <string name="auth_password">Пароль</string>
+    <string name="auth_show">Показати</string>
+    <string name="auth_hide">Сховати</string>
+    <string name="auth_sign_in">Увійти</string>
+    <string name="auth_hint">Демо-режим: підійде будь-яке коректне імʼя та пароль</string>
+    <string name="auth_error_generic">Не вдалося увійти. Спробуй ще раз.</string>
+    <string name="err_username_empty">Введи імʼя користувача</string>
+    <string name="err_username_short">Щонайменше 3 символи</string>
+    <string name="err_username_long">Не більше 20 символів</string>
+    <string name="err_username_chars">Лише латинські літери, цифри, _ та .</string>
+    <string name="err_password_empty">Введи пароль</string>
+    <string name="err_password_short">Щонайменше 8 символів</string>
+    <string name="err_password_digit">Додай хоча б одну цифру</string>
+    <string name="err_password_letter">Додай хоча б одну літеру</string>
+    <string name="home_greeting">Привіт, %1$s!</string>
 </resources>
